@@ -1,8 +1,10 @@
 package GUI;
 
 import DB.DBConnect;
+import DB.Employee;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.*;
 
 /**
  * Created by Santer on 04.11.2015.
@@ -19,6 +22,7 @@ public class EmployeeSearchApp extends JFrame {
     private JTextField lastNameTextField;
     private JButton searchButton;
     private JTable table1;
+    private JScrollPane jScrollPane;
 
     private DBConnect dbConnect = null;
 
@@ -39,9 +43,12 @@ public class EmployeeSearchApp extends JFrame {
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
 
-        setTitle("my Employee search app");
+        setTitle("Searching app");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 450, 300);
+        //middle of window
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+//        JOptionPane.showMessageDialog(this, screenSize); //show size
+        setBounds((int) (screenSize.getWidth()*0.4), (int) (screenSize.getHeight()*0.3), 450, 300);
         Application = new JPanel();
         Application.setBorder(new EmptyBorder(5, 5, 5, 5));
         Application.setLayout(new BorderLayout(0, 0));
@@ -73,10 +80,33 @@ public class EmployeeSearchApp extends JFrame {
                 //if lastName empty get all employees
 
                 //print employees
+
+                try{
+                    String lastName = lastNameTextField.getText();
+                    java.util.List<Employee> employeeList = null;
+
+                    if(lastName != null && lastName.trim().length() >0){
+                        employeeList=dbConnect.searchEMployee(lastName);
+                    }else {
+                        employeeList = dbConnect.getAllEmployees();
+                    }
+
+//                    for (Employee employee : employeeList) {
+//                        System.out.println(employee);
+//                    }
+
+                    EmployeeTableModel model =new EmployeeTableModel(employeeList);
+                    table1.setModel(model);
+                } catch (SQLException e1) {
+                  JOptionPane.showMessageDialog(EmployeeSearchApp.this, "Error: " + e, "Error",JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
+        jScrollPane = new JScrollPane();
+        Application.add(jScrollPane, BorderLayout.CENTER);
         panel.add(searchButton);
         table1 = new JTable();
+        jScrollPane.setViewportView(table1);
 
     }
 
