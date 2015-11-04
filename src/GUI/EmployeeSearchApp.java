@@ -48,7 +48,7 @@ public class EmployeeSearchApp extends JFrame {
         //middle of window
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 //        JOptionPane.showMessageDialog(this, screenSize); //show size
-        setBounds((int) (screenSize.getWidth()*0.4), (int) (screenSize.getHeight()*0.3), 450, 300);
+        setBounds((int) (screenSize.getWidth()*0.2), (int) (screenSize.getHeight()*0.3), (int) (0.9*screenSize.getHeight()), 450);
         Application = new JPanel();
         Application.setBorder(new EmptyBorder(5, 5, 5, 5));
         Application.setLayout(new BorderLayout(0, 0));
@@ -81,13 +81,13 @@ public class EmployeeSearchApp extends JFrame {
 
                 //print employees
 
-                try{
+                try {
                     String lastName = lastNameTextField.getText();
                     java.util.List<Employee> employeeList = null;
 
-                    if(lastName != null && lastName.trim().length() >0){
-                        employeeList=dbConnect.searchEMployee(lastName);
-                    }else {
+                    if (lastName != null && lastName.trim().length() > 0) {
+                        employeeList = dbConnect.searchEMployee(lastName);
+                    } else {
                         employeeList = dbConnect.getAllEmployees();
                     }
 
@@ -95,10 +95,10 @@ public class EmployeeSearchApp extends JFrame {
 //                        System.out.println(employee);
 //                    }
 
-                    EmployeeTableModel model =new EmployeeTableModel(employeeList);
+                    EmployeeTableModel model = new EmployeeTableModel(employeeList);
                     table1.setModel(model);
                 } catch (SQLException e1) {
-                  JOptionPane.showMessageDialog(EmployeeSearchApp.this, "Error: " + e, "Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(EmployeeSearchApp.this, "Error: " + e, "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -106,6 +106,7 @@ public class EmployeeSearchApp extends JFrame {
         Application.add(jScrollPane, BorderLayout.CENTER);
         panel.add(searchButton);
         table1 = new JTable();
+        table1.setFont(new Font("Verdana",Font.ITALIC, 18));
         jScrollPane.setViewportView(table1);
 
     }
