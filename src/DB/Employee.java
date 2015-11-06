@@ -19,6 +19,10 @@ public class Employee {
         this.salary = salary;
     }
 
+    public Employee(String lastName, String firstName, String email, BigDecimal salary) {
+        this(0, lastName, firstName, email, salary);
+    }
+
     public int getId() {
         return id;
     }

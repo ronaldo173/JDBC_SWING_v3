@@ -14,7 +14,7 @@ public class EmployeeTableModel extends AbstractTableModel {
     private static final int EMAIL_COL = 2;
     private static final int SALARY_COL = 3;
 
-    private String [] columnNames = {"Last Name", "First name", "Email", "Salery"};
+    private String [] columnNames = {"Last Name", "First name", "Email", "SalAry"};
     private List<Employee> employees;
 
     public EmployeeTableModel(List<Employee> employeeList) {

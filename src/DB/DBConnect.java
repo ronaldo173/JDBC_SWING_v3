@@ -102,6 +102,24 @@ public class DBConnect {
         return employee;
     }
 
+    public void addEmployee(Employee employee) {
+        PreparedStatement preparedStatement = null;
+
+        try {
+            preparedStatement = connection.prepareStatement("INSERT  into employees " +
+                    " (first_name, last_name, email, salary)" + "  values (?, ? , ?, ?)");
+
+            preparedStatement.setString(1, employee.getFirstName());
+            preparedStatement.setString(2, employee.getLastName());
+            preparedStatement.setString(3, employee.getEmail());
+            preparedStatement.setBigDecimal(4, employee.getSalary());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static void main(String[] args) {
         String requestLastName = "Do";

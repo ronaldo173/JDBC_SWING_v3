@@ -13,6 +13,8 @@ import java.awt.event.ComponentAdapter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Santer on 04.11.2015.
@@ -22,6 +24,7 @@ public class EmployeeSearchApp extends JFrame {
     private JTextField lastNameTextField;
     private JButton searchButton;
     private JTable table1;
+    private JButton button1;
     private JScrollPane jScrollPane;
 
     private DBConnect dbConnect = null;
@@ -106,11 +109,30 @@ public class EmployeeSearchApp extends JFrame {
         Application.add(jScrollPane, BorderLayout.CENTER);
         panel.add(searchButton);
         table1 = new JTable();
-        table1.setFont(new Font("Verdana",Font.ITALIC, 18));
+        table1.setFont(new Font("Verdana", Font.ITALIC, 18));
         jScrollPane.setViewportView(table1);
 
+        JPanel jPanel_1 = new JPanel();
+        Application.add(jPanel_1, BorderLayout.SOUTH);
+        jPanel_1.add(button1);
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AddEmployeeDIalog dIalog = new AddEmployeeDIalog(EmployeeSearchApp.this, dbConnect);
+//                AddEmployeeDIalog  dIalog = new AddEmployeeDIalog();
+                dIalog.setVisible(true);
+            }
+        });
     }
 
+    public void refreshEmployeesView() {
+        try {
+            List<Employee> employeeList = dbConnect.getAllEmployees();
+            EmployeeTableModel model = new EmployeeTableModel(employeeList);
+            table1.setModel(model);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error " + "Error" + JOptionPane.ERROR_MESSAGE);
+        }
 
-
+    }
 }
