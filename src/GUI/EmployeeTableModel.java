@@ -13,6 +13,7 @@ public class EmployeeTableModel extends AbstractTableModel {
     private static final int FIRST_NAME_COL = 1;
     private static final int EMAIL_COL = 2;
     private static final int SALARY_COL = 3;
+    public static final int OBJECT_COL = -1;
 
     private String [] columnNames = {"Last Name", "First name", "Email", "SalAry"};
     private List<Employee> employees;
@@ -49,6 +50,8 @@ public class EmployeeTableModel extends AbstractTableModel {
                 return employee.getEmail();
             case SALARY_COL:
                 return employee.getSalary();
+            case OBJECT_COL:
+                return employee;
             default:
                 return employee.getLastName();
         }

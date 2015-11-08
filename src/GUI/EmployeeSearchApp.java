@@ -4,17 +4,13 @@ import DB.DBConnect;
 import DB.Employee;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
-import java.io.IOException;
 import java.sql.SQLException;
-import java.util.*;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Santer on 04.11.2015.
@@ -22,12 +18,15 @@ import java.util.concurrent.ExecutionException;
 public class EmployeeSearchApp extends JFrame {
     private JPanel Application;
     private JTextField lastNameTextField;
-    private JButton searchButton;
+    private JButton searchButton, Add_button, Update_button;
     private JTable table1;
-    private JButton button1;
     private JScrollPane jScrollPane;
 
     private DBConnect dbConnect = null;
+    private ImageIcon imageIcon;
+
+    private Image imageMainIcon;
+
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -39,19 +38,22 @@ public class EmployeeSearchApp extends JFrame {
     }
 
     public EmployeeSearchApp() {
-        try{
-             dbConnect = new DBConnect();
+        try {
+            dbConnect = new DBConnect();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error" + e,
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
 
         setTitle("Searching app");
+        imageIcon = new ImageIcon("search.png", "go");
+        imageMainIcon = Toolkit.getDefaultToolkit().getImage("search_main.png");
+        setIconImage(imageMainIcon);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //middle of window
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 //        JOptionPane.showMessageDialog(this, screenSize); //show size
-        setBounds((int) (screenSize.getWidth()*0.2), (int) (screenSize.getHeight()*0.3), (int) (0.9*screenSize.getHeight()), 450);
+        setBounds((int) (screenSize.getWidth() * 0.2), (int) (screenSize.getHeight() * 0.3), (int) (0.9 * screenSize.getHeight()), 450);
         Application = new JPanel();
         Application.setBorder(new EmptyBorder(5, 5, 5, 5));
         Application.setLayout(new BorderLayout(0, 0));
@@ -69,19 +71,15 @@ public class EmployeeSearchApp extends JFrame {
         panel.add(lastNameTextField);
         lastNameTextField.setColumns(10);
 
-        searchButton = new JButton("Search");
+        searchButton = new JButton("Search", imageIcon);
 
         searchButton.addComponentListener(new ComponentAdapter() {
         });
         searchButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 //get last name of text field
-
                 //cal DBConnect and get employees for last name
-
                 //if lastName empty get all employees
-
                 //print employees
 
                 try {
@@ -93,11 +91,6 @@ public class EmployeeSearchApp extends JFrame {
                     } else {
                         employeeList = dbConnect.getAllEmployees();
                     }
-
-//                    for (Employee employee : employeeList) {
-//                        System.out.println(employee);
-//                    }
-
                     EmployeeTableModel model = new EmployeeTableModel(employeeList);
                     table1.setModel(model);
                 } catch (SQLException e1) {
@@ -114,16 +107,35 @@ public class EmployeeSearchApp extends JFrame {
 
         JPanel jPanel_1 = new JPanel();
         Application.add(jPanel_1, BorderLayout.SOUTH);
-        jPanel_1.add(button1);
-        button1.addActionListener(new ActionListener() {
+        jPanel_1.add(Add_button);
+        Add_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 AddEmployeeDIalog dIalog = new AddEmployeeDIalog(EmployeeSearchApp.this, dbConnect);
-//                AddEmployeeDIalog  dIalog = new AddEmployeeDIalog();
+                dIalog.setVisible(true);
+            }
+        });
+
+        jPanel_1.add(Update_button);
+        Update_button.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                int row = table1.getSelectedRow();
+                if (row < 0) {
+                    JOptionPane.showMessageDialog(EmployeeSearchApp.this, "not selected employee", "Errorr",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                Employee tempEmployee = (Employee) table1.getValueAt(row, EmployeeTableModel.OBJECT_COL);
+                AddEmployeeDIalog dIalog = new AddEmployeeDIalog(EmployeeSearchApp.this, dbConnect,
+                        tempEmployee, true);
+
                 dIalog.setVisible(true);
             }
         });
     }
+
 
     public void refreshEmployeesView() {
         try {

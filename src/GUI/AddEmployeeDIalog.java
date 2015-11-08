@@ -4,9 +4,10 @@ import DB.DBConnect;
 import DB.Employee;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Arc2D;
 import java.math.BigDecimal;
-import java.util.DoubleSummaryStatistics;
 
 public class AddEmployeeDIalog extends JDialog {
     private JPanel contentPane;
@@ -24,15 +25,38 @@ public class AddEmployeeDIalog extends JDialog {
     private DBConnect dbConnect;
     private EmployeeSearchApp employeeSearchApp;
 
-    public AddEmployeeDIalog(EmployeeSearchApp employeeSearchApp, DBConnect dbConnect) {
+    private Employee previousEmployee;
+    private boolean updateMode = false;
+
+    public AddEmployeeDIalog(EmployeeSearchApp employeeSearchApp, DBConnect dbConnect, Employee thePreviousEployee,
+                             boolean theUpdatMode) {
         this();
         this.dbConnect = dbConnect;
         this.employeeSearchApp = employeeSearchApp;
+        this.previousEmployee = thePreviousEployee;
+        this.updateMode = theUpdatMode;
+        if (updateMode) {
+            setTitle("Update employee!!");
+            populateGui(previousEmployee);
+        }
+    }
+
+    public AddEmployeeDIalog(EmployeeSearchApp employeeSearchApp, DBConnect dbConnect) {
+        this(employeeSearchApp, dbConnect, null, false);
+    }
+
+    private void populateGui(Employee employee) {
+        firstNameTextField.setText(employee.getFirstName());
+        lastNameTextField.setText(employee.getLastName());
+        emailTextField.setText(employee.getEmail());
+        salaryTextField.setText(employee.getSalary().toString());
     }
 
     public AddEmployeeDIalog() {
         setTitle("Add employee dialog!");
-        setBounds(150, 150, 450, 250);
+        Image imageIcon = Toolkit.getDefaultToolkit().getImage("user_add.png");
+        setIconImage(imageIcon);
+        setBounds(150, 150, 450, 300);
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(saveEmployee);
@@ -66,39 +90,57 @@ public class AddEmployeeDIalog extends JDialog {
     }
 
     private void onOK() {
-// add your code here
-//        dispose();
-        //get employee from gui
         String firstName = firstNameTextField.getText();
         String lastName = lastNameTextField.getText();
         String email = emailTextField.getText();
         String salaryStr = salaryTextField.getText();
 
-        BigDecimal salary = null;
-        try {
-            salary = BigDecimal.valueOf(Integer.parseInt(salaryStr));
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Error salary = BigDecimal.valueOf..", JOptionPane.ERROR_MESSAGE);
-        }
+        BigDecimal salary = convertStringTobigDecimal(salaryStr);
 
         //test input
         JOptionPane.showMessageDialog(this, "First name: " + firstName + "\nLast name:" +
                 lastName + "\nEmail: " + email + "\nSalary: " + salary);
         Employee employee = new Employee(lastName, firstName, email, salary);
 
+
+        //---
+        if (updateMode) {
+            employee = previousEmployee;
+            employee.setLastName(lastName);
+            employee.setFirstName(firstName);
+            employee.setSalary(salary);
+        } else {
+            employee = new Employee(lastName, firstName, email, salary);
+        }
         try {
-            dbConnect.addEmployee(employee);
+            if (updateMode) {
+                dbConnect.updateEMployee(employee);
+            } else {
+                dbConnect.addEmployee(employee);
+            }
             setVisible(false);
             dispose();
             employeeSearchApp.refreshEmployeesView();
 
             JOptionPane.showMessageDialog(employeeSearchApp, "employee added succesfully!",
-                    "Employee added!", JOptionPane.INFORMATION_MESSAGE);
-            System.out.println("Added");
+                    "Employee saved!", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(employeeSearchApp, "Error! .." + e.getMessage() + "...xz ", "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private BigDecimal convertStringTobigDecimal(String salaryStr) {
+        BigDecimal result = null;
+
+        try {
+            double salaryDouble = Double.parseDouble(salaryStr);
+            result = BigDecimal.valueOf(salaryDouble);
+        } catch (Exception e) {
+            System.out.println("Invalid value of salary");
+            result = BigDecimal.valueOf(0.0);
+        }
+        return result;
     }
 
 

@@ -120,6 +120,24 @@ public class DBConnect {
         }
     }
 
+    public void updateEMployee(Employee employeeNew) {
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = connection.prepareStatement("UPDATE employees SET first_name = ?, last_name = ?," +
+                    "email = ?, salary = ? WHERE id = ?");
+
+            preparedStatement.setString(1, employeeNew.getFirstName());
+            preparedStatement.setString(2, employeeNew.getLastName());
+            preparedStatement.setBigDecimal(3, employeeNew.getSalary());
+            preparedStatement.setString(4, employeeNew.getEmail());
+            preparedStatement.setInt(5, employeeNew.getId());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static void main(String[] args) {
         String requestLastName = "Do";
