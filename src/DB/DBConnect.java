@@ -138,6 +138,21 @@ public class DBConnect {
         }
     }
 
+    public void deleteEmployee(int employeeId) throws SQLException {
+        PreparedStatement preparedStatement = null;
+
+        try {
+            preparedStatement = connection.prepareStatement("DELETE from employees WHERE id = ?");
+            preparedStatement.setInt(1, employeeId);
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            preparedStatement.close();
+        }
+    }
+
 
     public static void main(String[] args) {
         String requestLastName = "Do";

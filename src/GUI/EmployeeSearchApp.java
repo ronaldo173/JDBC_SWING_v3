@@ -20,6 +20,7 @@ public class EmployeeSearchApp extends JFrame {
     private JTextField lastNameTextField;
     private JButton searchButton, Add_button, Update_button;
     private JTable table1;
+    private JButton deleteButton;
     private JScrollPane jScrollPane;
 
     private DBConnect dbConnect = null;
@@ -134,6 +135,36 @@ public class EmployeeSearchApp extends JFrame {
                 dIalog.setVisible(true);
             }
         });
+        jPanel_1.add(deleteButton);
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row = table1.getSelectedRow();
+                if (row < 0) {
+                    JOptionPane.showMessageDialog(EmployeeSearchApp.this, "You don't select any row", "Not selected",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                Employee checkedEmployee = (Employee) table1.getValueAt(row, EmployeeTableModel.OBJECT_COL);
+
+                int confirm = JOptionPane.showConfirmDialog(EmployeeSearchApp.this, "Shure want to delete row: \n" +
+                                checkedEmployee.getFirstName() + "\n" + checkedEmployee.getLastName() + "\n" +
+                                checkedEmployee.getEmail(), "Confirm",
+                        JOptionPane.YES_NO_OPTION);
+                if (confirm == 0) {
+                    try {
+                        dbConnect.deleteEmployee(checkedEmployee.getId());
+                        EmployeeSearchApp.this.refreshEmployeesView();
+                    } catch (SQLException e1) {
+                        e1.printStackTrace();
+                    }
+//                    System.out.println("deleted!");
+                    JOptionPane.showMessageDialog(EmployeeSearchApp.this, "Employee deleted!", "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
     }
 
 
@@ -145,6 +176,5 @@ public class EmployeeSearchApp extends JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error " + "Error" + JOptionPane.ERROR_MESSAGE);
         }
-
     }
 }
